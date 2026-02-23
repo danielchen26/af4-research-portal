@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AF4 Reverse Engineering - IsoDDE Analysis</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav id="sidebar">
+        <div class="sidebar-header">
+            <h2>AF4 Research</h2>
+            <p class="subtitle">IsoDDE Reverse Engineering</p>
+        </div>
+        <ul class="nav-links">
+            <li><a href="#overview" class="active" data-section="overview">Overview</a></li>
+            <li><a href="#isodde" data-section="isodde">IsoDDE Report Analysis</a></li>
+            <li><a href="#architecture" data-section="architecture">Architecture Comparison</a></li>
+            <li><a href="#physics" data-section="physics">Deep Physics Insights</a></li>
+            <li><a href="#benchmarks" data-section="benchmarks">Benchmark Data</a></li>
+            <li><a href="#blueprint" data-section="blueprint">Phase 1 Blueprint</a></li>
+            <li><a href="#codebase" data-section="codebase">Codebase Analysis</a></li>
+        </ul>
+        <div class="sidebar-footer">
+            <p>Last updated: Feb 23, 2026</p>
+        </div>
+    </nav>
+
+    <main id="content">
+        <!-- OVERVIEW -->
+        <section id="overview" class="section active">
+            <div class="hero">
+                <h1>AlphaFold 4 (IsoDDE) Reverse Engineering</h1>
+                <p class="hero-subtitle">A comprehensive analysis of Isomorphic Labs' Drug Design Engine and the path to rebuilding it from public information</p>
+                <div class="hero-stats">
+                    <div class="stat-card">
+                        <span class="stat-number">75.58%</span>
+                        <span class="stat-label">IsoDDE Ab-Ag accuracy</span>
+                        <span class="stat-compare">vs 47.9% AF3</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number">r = 0.85</span>
+                        <span class="stat-label">Binding Affinity (FEP+4)</span>
+                        <span class="stat-compare">vs 0.66 Boltz-2</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number">0.75</span>
+                        <span class="stat-label">Pocket AUPRC</span>
+                        <span class="stat-compare">vs 0.51 P2Rank</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number">0</span>
+                        <span class="stat-label">Architecture Details Disclosed</span>
+                        <span class="stat-compare">27-page report, zero methods</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-block">
+                <h2>What is "AlphaFold 4"?</h2>
+                <p>There is no official "AlphaFold 4." What people call AF4 is <strong>IsoDDE</strong> (Isomorphic Labs Drug Design Engine), released February 10, 2026. Mohammed AlQuraishi (Columbia) described it as "a major advance, on the scale of an AlphaFold 4."</p>
+                <p>Unlike previous AlphaFold releases, IsoDDE is <strong>fully proprietary</strong> &mdash; no code, no weights, no architecture details. The 27-page technical report is entirely benchmarks with zero description of the model internals.</p>
+
+                <h3>IsoDDE's Unified Pipeline</h3>
+                <div class="pipeline">
+                    <div class="pipeline-step">
+                        <div class="step-icon">1</div>
+                        <div class="step-content">
+                            <h4>Sequence Input</h4>
+                            <p>Amino acid sequence only</p>
+                        </div>
+                    </div>
+                    <div class="pipeline-arrow">&rarr;</div>
+                    <div class="pipeline-step">
+                        <div class="step-icon">2</div>
+                        <div class="step-content">
+                            <h4>Structure Prediction</h4>
+                            <p>Enhanced PairFormer + Flow/Diffusion</p>
+                        </div>
+                    </div>
+                    <div class="pipeline-arrow">&rarr;</div>
+                    <div class="pipeline-step">
+                        <div class="step-icon">3</div>
+                        <div class="step-content">
+                            <h4>Pocket Discovery</h4>
+                            <p>Blind, including cryptic sites</p>
+                        </div>
+                    </div>
+                    <div class="pipeline-arrow">&rarr;</div>
+                    <div class="pipeline-step">
+                        <div class="step-icon">4</div>
+                        <div class="step-content">
+                            <h4>Affinity Ranking</h4>
+                            <p>Pearson r=0.85 (surpasses FEP+)</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-block">
+                <h2>Reverse Engineering Strategy</h2>
+                <div class="phase-timeline">
+                    <div class="phase">
+                        <div class="phase-header phase-1">Phase 1: Foundation (Months 1-3)</div>
+                        <p>Fork Boltz-2, integrate affinity module, train on public data. Reproduce baseline benchmarks.</p>
+                    </div>
+                    <div class="phase">
+                        <div class="phase-header phase-2">Phase 2: Enhancement (Months 3-6)</div>
+                        <p>Widen pair representations, implement flow matching, add physics constraints.</p>
+                    </div>
+                    <div class="phase">
+                        <div class="phase-header phase-3">Phase 3: Pocket Discovery (Months 6-12)</div>
+                        <p>Build blind pocket discovery capability. Novel research required.</p>
+                    </div>
+                    <div class="phase">
+                        <div class="phase-header phase-4">Phase 4: Integration (Months 12-18)</div>
+                        <p>Unified multi-task system. Joint training optimization.</p>
+                    </div>
+                    <div class="phase">
+                        <div class="phase-header phase-5">Phase 5: Closing the Gap (18+ Months)</div>
+                        <p>Data partnerships, federated learning, algorithmic innovation.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-block">
+                <h2>Open-Source Building Blocks</h2>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Project</th>
+                            <th>License</th>
+                            <th>Key Features</th>
+                            <th>IsoDDE Relevance</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="highlight-row">
+                            <td><strong>Boltz-2</strong></td>
+                            <td><span class="badge badge-green">MIT</span></td>
+                            <td>Structure + affinity, fully open</td>
+                            <td>Closest to IsoDDE's multi-task approach</td>
+                        </tr>
+                        <tr>
+                            <td>AlphaFold 3</td>
+                            <td><span class="badge badge-yellow">CC-BY-NC-SA</span></td>
+                            <td>Full AF3 inference, official weights</td>
+                            <td>Foundation architecture</td>
+                        </tr>
+                        <tr>
+                            <td>OpenFold</td>
+                            <td><span class="badge badge-green">Apache 2.0</span></td>
+                            <td>AF2 clone, trainable</td>
+                            <td>Training infrastructure only</td>
+                        </tr>
+                        <tr>
+                            <td>Chai-1</td>
+                            <td><span class="badge badge-green">Apache 2.0</span></td>
+                            <td>Multi-modal structure prediction</td>
+                            <td>PLM integration ideas</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- IsoDDE REPORT -->
+        <section id="isodde" class="section">
+            <h1>IsoDDE Technical Report Analysis</h1>
+            <div class="callout callout-warning">
+                <strong>Critical Finding:</strong> The 27-page report contains zero architecture details, zero mathematical formulations, zero loss functions, zero training hyperparameters. This is deliberate IP protection.
+            </div>
+
+            <div class="content-block">
+                <h2>What the Report DOES Reveal</h2>
+
+                <h3>Architecture Clues (Indirect)</h3>
+                <div class="clue-grid">
+                    <div class="clue-card">
+                        <div class="clue-confidence high">HIGH confidence</div>
+                        <h4>Flow Matching</h4>
+                        <p>"Revisiting the generative modelling formulation with newer perspectives" &mdash; almost certainly refers to flow matching or rectified flows.</p>
+                    </div>
+                    <div class="clue-card">
+                        <div class="clue-confidence high">HIGH confidence</div>
+                        <h4>Wider Pair Representations</h4>
+                        <p>References SeedFold (Zhou et al., 2025) reporting "improvements from wider pairformer representations."</p>
+                    </div>
+                    <div class="clue-card">
+                        <div class="clue-confidence high">HIGH confidence</div>
+                        <h4>MSA Module Reordering</h4>
+                        <p>"Reordering operations in the MSA module to improve information flow between single and pair representations."</p>
+                    </div>
+                    <div class="clue-card">
+                        <div class="clue-confidence medium">MEDIUM confidence</div>
+                        <h4>Physics Constraints</h4>
+                        <p>Zero ligand violations achieved. References Neuralplexer3's "flow-based implementation incorporating physical priors."</p>
+                    </div>
+                    <div class="clue-card">
+                        <div class="clue-confidence high">HIGH confidence</div>
+                        <h4>Distillation Training</h4>
+                        <p>"Distillation data mixtures" explicitly mentioned. Crop size schedules varied across model variants.</p>
+                    </div>
+                    <div class="clue-card">
+                        <div class="clue-confidence medium">MEDIUM confidence</div>
+                        <h4>Improved Confidence Heads</h4>
+                        <p>References to "changes to the diffusion and confidence heads" from competitors.</p>
+                    </div>
+                </div>
+
+                <h3>Training Details</h3>
+                <ul>
+                    <li><strong>Training cutoff:</strong> September 30, 2021 (PDB structures)</li>
+                    <li><strong>Affinity data:</strong> ChEMBL 34 (training), ChEMBL 35 (test)</li>
+                    <li><strong>Affinity scope:</strong> Single-chain protein, max 1800 aa, &ge;20 ligands per assay</li>
+                    <li><strong>Activity types:</strong> Ki, Kd, IC50, EC50, DC50 (label std &ge; 0.5)</li>
+                    <li><strong>Ligand constraints:</strong> 6-40 heavy atoms, organic only</li>
+                    <li><strong>Training strategies:</strong> Distillation mixtures, crop size curriculum, varied losses</li>
+                </ul>
+            </div>
+
+            <div class="content-block">
+                <h2>Acknowledged Limitations</h2>
+                <ol>
+                    <li>This is only a "preview of the predictive core" &mdash; full system has generative capabilities not shown</li>
+                    <li>Pocket identification drops on cryptic sites (AUPRC 0.63 vs 0.76 non-cryptic)</li>
+                    <li>Size limit: 1800 biopolymer residues + ligand atoms</li>
+                    <li>No protein-nucleic acid results shown</li>
+                    <li>Protein-protein improvement is smallest (1.19x over AF3)</li>
+                    <li>No small-molecule generation demonstrated</li>
+                </ol>
+            </div>
+
+            <div class="content-block">
+                <h2>Reverse Engineering Priority Matrix</h2>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Insight</th>
+                            <th>Confidence</th>
+                            <th>Impact</th>
+                            <th>Priority</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Flow matching replaces DDPM</td>
+                            <td><span class="badge badge-green">HIGH</span></td>
+                            <td><span class="badge badge-green">HIGH</span></td>
+                            <td><strong>P0</strong></td>
+                        </tr>
+                        <tr>
+                            <td>Wider pair representations</td>
+                            <td><span class="badge badge-green">HIGH</span></td>
+                            <td><span class="badge badge-yellow">MEDIUM</span></td>
+                            <td><strong>P1</strong></td>
+                        </tr>
+                        <tr>
+                            <td>MSA module reordering</td>
+                            <td><span class="badge badge-green">HIGH</span></td>
+                            <td><span class="badge badge-yellow">MEDIUM</span></td>
+                            <td><strong>P1</strong></td>
+                        </tr>
+                        <tr>
+                            <td>Physics constraints in diffusion</td>
+                            <td><span class="badge badge-yellow">MEDIUM</span></td>
+                            <td><span class="badge badge-green">HIGH</span></td>
+                            <td><strong>P1</strong></td>
+                        </tr>
+                        <tr>
+                            <td>Distillation training</td>
+                            <td><span class="badge badge-green">HIGH</span></td>
+                            <td><span class="badge badge-yellow">MEDIUM</span></td>
+                            <td><strong>P2</strong></td>
+                        </tr>
+                        <tr>
+                            <td>Proprietary data advantage</td>
+                            <td><span class="badge badge-green">HIGH</span></td>
+                            <td><span class="badge badge-red">VERY HIGH</span></td>
+                            <td><span class="badge badge-red">Cannot replicate</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- ARCHITECTURE -->
+        <section id="architecture" class="section">
+            <h1>Architecture Comparison</h1>
+
+            <div class="content-block">
+                <h2>Dimension Comparison</h2>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Component</th>
+                            <th>Boltz-2</th>
+                            <th>AF3</th>
+                            <th>OpenFold (AF2)</th>
+                            <th>IsoDDE (inferred)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Single repr (s)</td><td>384</td><td>384</td><td>384</td><td>384+</td></tr>
+                        <tr><td>Pair repr (z)</td><td>128</td><td>128</td><td>128</td><td class="highlight-cell">192-256?</td></tr>
+                        <tr><td>MSA repr (m)</td><td>64</td><td>64</td><td>256</td><td>Unknown</td></tr>
+                        <tr><td>Atom repr (a)</td><td>128</td><td>128</td><td>N/A</td><td>Unknown</td></tr>
+                        <tr><td>PairFormer blocks</td><td>48</td><td>48</td><td>48</td><td>48+</td></tr>
+                        <tr><td>MSA blocks</td><td>4</td><td>4</td><td>4 (Extra)</td><td>4+</td></tr>
+                        <tr><td>Attention heads</td><td>16</td><td>16</td><td>8/4</td><td>Unknown</td></tr>
+                        <tr><td>Diffusion layers</td><td>24</td><td>~24</td><td>N/A (IPA)</td><td>Unknown</td></tr>
+                        <tr><td>Recycling steps</td><td>3</td><td>3</td><td>3-20</td><td>Unknown</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="content-block">
+                <h2>Boltz-2 PairFormer Block (from source code)</h2>
+                <pre><code>Per block (48 total):
+  1. TriangularMultiplication_Outgoing(z)     # z_ij += &Sigma;_k z_ik &otimes; z_jk
+  2. TriangularMultiplication_Incoming(z)      # z_ij += &Sigma;_k z_ki &otimes; z_kj
+  3. TriangularAttention_StartingNode(z)       # Row-wise attention with triangle bias
+  4. TriangularAttention_EndingNode(z)         # Column-wise attention with triangle bias
+  5. Transition_z(z)                           # SiLU-gated MLP: z&rarr;2z&rarr;z
+  6. AttentionPairBias(s, z)                   # Self-attention on s with z bias
+  7. Transition_s(s)                           # SiLU-gated MLP: s&rarr;4s&rarr;s
+
+Key: Dropout=0.25, LeCun normal init, final_init_ for outputs
+     Attention: q&middot;k^T / &radic;d + z_bias, sigmoid gating</code></pre>
+            </div>
+
+            <div class="content-block">
+                <h2>Boltz-2 Diffusion Module</h2>
+                <div class="two-col">
+                    <div>
+                        <h3>Architecture</h3>
+                        <ul>
+                            <li>SingleConditioning: concat(s_trunk, s_inputs) &rarr; dim 768</li>
+                            <li>FourierEmbedding(dim=256) for time</li>
+                            <li>AtomEncoder: 3 layers, window attention (32q/128k)</li>
+                            <li><strong>TokenTransformer: 24 layers, 16 heads, dim=768</strong></li>
+                            <li>AtomDecoder: 3 layers, window attention</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3>Noise Schedule</h3>
+                        <ul>
+                            <li>&sigma;<sub>min</sub> = 0.0004</li>
+                            <li>&sigma;<sub>max</sub> = 160.0</li>
+                            <li>&sigma;<sub>data</sub> = 16.0</li>
+                            <li>&rho; = 7</li>
+                            <li>P<sub>mean</sub> = -1.2, P<sub>std</sub> = 1.5</li>
+                            <li>Sampling: 200 steps (Euler)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-block">
+                <h2>Boltz-2 Affinity Module</h2>
+                <pre><code>AffinityModule:
+  Input: s_inputs (B, N, 384), z (B, N, N, 128), x_pred (B, L, 3)
+    |
+    v
+  z = z_linear(z_norm(z))                    # Normalize + project pair
+  z = z + s_to_z_in1(s)[:,:,None] + s_to_z_in2(s)[:,None,:]  # Outer product
+    |
+  dist = cdist(representative_atoms)          # Pairwise distances
+  distogram = bin(dist, 64 bins, 2-22&Aring;)      # Distance binning
+  z = z + pairwise_conditioner(z, distogram)  # 2x Transition blocks
+    |
+  cross_mask = (lig*rec) + (rec*lig) + (lig*lig)  # Interface masking
+  z = PairformerNoSeq(z, mask=cross_mask)     # 48 blocks
+    |
+  g = masked_mean(z * cross_mask)             # Aggregate interface
+  g = MLP(g)                                  # Project to token_s
+    |
+    |--> continuous_head(g) --> affinity_pred_value     (log10 IC50)
+    |--> binary_head(g)     --> affinity_probability    (sigmoid)
+    |
+  MW correction: 1.035 * pred - 0.600 * MW^0.3 + 2.833</code></pre>
+            </div>
+        </section>
+
+        <!-- PHYSICS -->
+        <section id="physics" class="section">
+            <h1>Deep Physics Insights</h1>
+            <p class="section-subtitle">Non-equilibrium statistical mechanics meets generative AI: why flow matching is the key innovation</p>
+
+            <div class="content-block">
+                <h2>1. The Equilibrium Trap</h2>
+                <div class="callout callout-info">
+                    <strong>Core Insight:</strong> Standard diffusion models (AF3) perform equilibrium Boltzmann sampling. But protein-ligand binding is fundamentally a non-equilibrium process. This is why AF3 struggles with induced fit and cryptic pockets.
+                </div>
+                <p>AF3's diffusion model learns the score function:</p>
+                <div class="equation">s<sub>&theta;</sub>(x, t) &asymp; &nabla;<sub>x</sub> log p<sub>t</sub>(x) = -&beta; &nabla;<sub>x</sub> F(x)</div>
+                <p>This is the gradient of the <strong>equilibrium free energy landscape</strong>. The process satisfies detailed balance &mdash; the forward and reverse processes are time-reversal symmetric. This means the model cannot capture:</p>
+                <ul>
+                    <li>Kinetic pathways of ligand binding</li>
+                    <li>Induced fit conformational changes</li>
+                    <li>Cryptic pocket opening (non-equilibrium fluctuations)</li>
+                    <li>Entropic contributions from conformational ensembles</li>
+                </ul>
+            </div>
+
+            <div class="content-block">
+                <h2>2. Flow Matching: The Non-Equilibrium Solution</h2>
+                <p>Flow matching replaces stochastic diffusion with a deterministic ODE:</p>
+                <div class="equation">dx/dt = v<sub>&theta;</sub>(x, t) &nbsp;&nbsp; for t &isin; [0, 1]</div>
+                <p>This learns the <strong>optimal transport</strong> from noise to data &mdash; the minimum-action path. In physics terms, this minimizes the action:</p>
+                <div class="equation">S[x(t)] = &int;<sub>0</sub><sup>1</sup> L(x, dx/dt, t) dt</div>
+
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Property</th>
+                            <th>DDPM Diffusion (AF3)</th>
+                            <th>Flow Matching (IsoDDE?)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Trajectory</td><td>Stochastic, meandering</td><td>Deterministic, straight-line</td></tr>
+                        <tr><td>Physics</td><td>Equilibrium (detailed balance)</td><td>Non-equilibrium (optimal transport)</td></tr>
+                        <tr><td>Free energy</td><td>Implicit (from score)</td><td>Explicit (from transport cost)</td></tr>
+                        <tr><td>Multi-modal</td><td>Can get stuck between modes</td><td>Natural via transport plan</td></tr>
+                        <tr><td>Sampling speed</td><td>200+ steps typical</td><td>50-100 steps possible</td></tr>
+                    </tbody>
+                </table>
+
+                <h3>Jarzynski Equality Connection</h3>
+                <div class="equation">&langle;exp(-&beta;W)&rangle;<sub>neq</sub> = exp(-&beta;&Delta;F)</div>
+                <p>Non-equilibrium trajectories contain equilibrium free energy information. A flow matching model that learns optimal non-equilibrium trajectories can extract equilibrium properties (binding &Delta;G) more efficiently than equilibrium diffusion.</p>
+            </div>
+
+            <div class="content-block">
+                <h2>3. Information Geometry: Pair Representation as a Riemannian Metric</h2>
+                <p>The PairFormer's pair representation z(i,j) is a <strong>metric tensor</strong> on residue space. The triangular updates enforce the triangle inequality:</p>
+                <div class="equation">z(i,j) &larr; z(i,j) + &Sigma;<sub>k</sub> f(z(i,k), z(k,j))</div>
+                <p>This is exactly the triangle inequality in metric geometry: d(i,j) &le; d(i,k) + d(k,j).</p>
+                <p><strong>Wider pair representations</strong> (128 &rarr; 192-256) increase the rank of this metric tensor, allowing the model to represent more complex geometries &mdash; exactly what's needed for hard cases with many long-range correlations.</p>
+            </div>
+
+            <div class="content-block">
+                <h2>4. Renormalization Group and Multi-Scale Physics</h2>
+                <p>Each PairFormer block performs an RG-like operation: integrating out intermediate degrees of freedom to obtain effective long-wavelength interactions.</p>
+                <div class="scale-diagram">
+                    <div class="scale-row"><span class="scale-label">&lt;1 &Aring;</span><span class="scale-desc">Quantum/electronic: bonds, orbitals</span></div>
+                    <div class="scale-row"><span class="scale-label">1-3 &Aring;</span><span class="scale-desc">Chemical: bond lengths, angles, torsions</span></div>
+                    <div class="scale-row"><span class="scale-label">3-10 &Aring;</span><span class="scale-desc">Secondary structure: H-bonds, backbone</span></div>
+                    <div class="scale-row"><span class="scale-label">10-30 &Aring;</span><span class="scale-desc">Domains: hydrophobic core, salt bridges</span></div>
+                    <div class="scale-row"><span class="scale-label">30-100 &Aring;</span><span class="scale-desc">Tertiary: long-range contacts, allostery</span></div>
+                    <div class="scale-row"><span class="scale-label">&gt;100 &Aring;</span><span class="scale-desc">Quaternary: subunit interfaces, complexes</span></div>
+                </div>
+                <p>More PairFormer blocks = more RG iterations = better convergence for long-range interactions (the hard cases).</p>
+            </div>
+
+            <div class="content-block">
+                <h2>5. Fluctuation-Dissipation and Unified Multi-Task</h2>
+                <p>The fluctuation-dissipation theorem explains why structure + affinity + pocket should be unified:</p>
+                <div class="three-col">
+                    <div class="col-card">
+                        <h4>Structure</h4>
+                        <p>Equilibrium distribution p(x)</p>
+                        <p class="equation-small">x* = argmax p(x)</p>
+                    </div>
+                    <div class="col-card">
+                        <h4>Affinity</h4>
+                        <p>Free energy difference</p>
+                        <p class="equation-small">&Delta;G = -kT ln(Z<sub>b</sub>/Z<sub>u</sub>)</p>
+                    </div>
+                    <div class="col-card">
+                        <h4>Pockets</h4>
+                        <p>Fluctuation amplitude</p>
+                        <p class="equation-small">&langle;(&delta;x)&sup2;&rangle; &rarr; pocket openings</p>
+                    </div>
+                </div>
+                <p>All three are different moments of the <strong>same probability distribution</strong>. A model that learns the full distribution naturally captures all three.</p>
+            </div>
+
+            <div class="content-block">
+                <h2>6. The Feynman Perspective</h2>
+                <blockquote>
+                    "What I cannot create, I do not understand." &mdash; Richard Feynman
+                </blockquote>
+                <p>The transition from diffusion (equilibrium) to flow matching (non-equilibrium) is not just a technical improvement &mdash; it's a conceptual shift from "sampling the Boltzmann distribution" to "learning the dynamics of molecular assembly."</p>
+                <p><strong>The path forward: encode more physics, not just more data.</strong></p>
+            </div>
+        </section>
+
+        <!-- BENCHMARKS -->
+        <section id="benchmarks" class="section">
+            <h1>Benchmark Data</h1>
+
+            <div class="content-block">
+                <h2>FoldBench Results (Post Jan 2023 Structures)</h2>
+                <div class="chart-container">
+                    <canvas id="foldbenchChart"></canvas>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Model</th>
+                            <th>Antibody-Antigen (%)</th>
+                            <th>Protein-Ligand (%)</th>
+                            <th>Protein-Protein (%)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="highlight-row"><td><strong>IsoDDE</strong></td><td><strong>75.58</strong></td><td><strong>75.99</strong></td><td><strong>74.19</strong></td></tr>
+                        <tr><td>AlphaFold 3</td><td>47.90</td><td>64.90</td><td>72.93</td></tr>
+                        <tr><td>SeedFold</td><td>53.21</td><td>63.12</td><td>74.03</td></tr>
+                        <tr><td>Protenix-v1</td><td>50.12</td><td>62.79</td><td>74.00</td></tr>
+                        <tr><td>Chai-1</td><td>23.64</td><td>51.23</td><td>68.53</td></tr>
+                        <tr><td>HelixFold 3</td><td>28.40</td><td>51.82</td><td>66.27</td></tr>
+                        <tr><td>Protenix</td><td>34.13</td><td>50.70</td><td>68.18</td></tr>
+                        <tr><td>OpenFold 3</td><td>28.83</td><td>44.49</td><td>69.96</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="content-block">
+                <h2>Binding Affinity (Pearson Correlation)</h2>
+                <div class="chart-container">
+                    <canvas id="affinityChart"></canvas>
+                </div>
+                <div class="three-col">
+                    <div class="col-card">
+                        <h4>FEP+4 Benchmark</h4>
+                        <table class="data-table compact">
+                            <tr><td><strong>IsoDDE</strong></td><td><strong>0.85</strong></td></tr>
+                            <tr><td>FEP+ (physics)</td><td>0.78</td></tr>
+                            <tr><td>ABFE</td><td>0.75</td></tr>
+                            <tr><td>Boltz-2</td><td>0.66</td></tr>
+                            <tr><td>OpenFE</td><td>0.55</td></tr>
+                        </table>
+                    </div>
+                    <div class="col-card">
+                        <h4>OpenFE Benchmark</h4>
+                        <table class="data-table compact">
+                            <tr><td><strong>IsoDDE</strong></td><td><strong>0.73</strong></td></tr>
+                            <tr><td>FEP+</td><td>0.72</td></tr>
+                            <tr><td>OpenFE</td><td>0.62</td></tr>
+                            <tr><td>Boltz-2</td><td>0.29</td></tr>
+                        </table>
+                    </div>
+                    <div class="col-card">
+                        <h4>CASP16 Benchmark</h4>
+                        <table class="data-table compact">
+                            <tr><td><strong>IsoDDE</strong></td><td><strong>0.75</strong></td></tr>
+                            <tr><td>Boltz-2</td><td>0.65</td></tr>
+                            <tr><td>Haiping</td><td>0.54</td></tr>
+                            <tr><td>GAT</td><td>0.50</td></tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-block">
+                <h2>Pocket Identification (AUPRC)</h2>
+                <table class="data-table">
+                    <thead>
+                        <tr><th>Method</th><th>Overall</th><th>Non-Cryptic</th><th>Cryptic</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr class="highlight-row"><td><strong>IsoDDE</strong></td><td><strong>0.75</strong></td><td><strong>0.76</strong></td><td><strong>0.63</strong></td></tr>
+                        <tr><td>P2Rank</td><td>0.51</td><td>0.53</td><td>0.40</td></tr>
+                        <tr><td>Random</td><td>0.16</td><td>0.17</td><td>0.10</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="content-block">
+                <h2>Antibody-Antigen Performance</h2>
+                <table class="data-table">
+                    <thead>
+                        <tr><th>Metric</th><th>IsoDDE (1 seed)</th><th>AF3</th><th>Boltz-2</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>DockQ &gt; 0.8 (high accuracy)</td><td><strong>39%</strong></td><td>~17%</td><td>~20%</td></tr>
+                        <tr><td>DockQ &gt; 0.23 (correct)</td><td><strong>63%</strong></td><td>~45%</td><td>~29%</td></tr>
+                        <tr><td>CDR-H3 RMSD &le; 2&Aring;</td><td><strong>70%</strong></td><td>58%</td><td>43%</td></tr>
+                        <tr><td>With 1000 seeds: correct</td><td><strong>82%</strong></td><td colspan="2">Still below IsoDDE@1 seed</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- BLUEPRINT -->
+        <section id="blueprint" class="section">
+            <h1>Phase 1 Integration Blueprint</h1>
+            <p class="section-subtitle">Building an AF3-equivalent multi-task system using Boltz-2 as the primary codebase</p>
+
+            <div class="content-block">
+                <h2>Key Modifications</h2>
+
+                <div class="mod-card">
+                    <h3>1. Wider Pair Representations</h3>
+                    <p>Based on SeedFold findings: widen token_z from 128 to 192 (50% increase).</p>
+                    <pre><code>model:
+  token_s: 384     # Keep single dim
+  token_z: 192     # Widen from 128
+  pairformer:
+    num_blocks: 48
+    num_heads: 16
+    pairwise_num_heads: 6</code></pre>
+                </div>
+
+                <div class="mod-card">
+                    <h3>2. Flow Matching Diffusion</h3>
+                    <p>Replace DDPM with rectified flows. Training objective: velocity field matching.</p>
+                    <pre><code># Flow matching training
+t = uniform(0, 1)
+x_t = (1-t) * noise + t * x_true     # Linear interpolation
+v_target = x_true - noise              # Target velocity
+v_pred = model(x_t, t, conditioning)   # Predicted velocity
+loss = MSE(v_pred, v_target)           # Simple L2 loss</code></pre>
+                </div>
+
+                <div class="mod-card">
+                    <h3>3. Physics Loss Terms</h3>
+                    <p>Add bond/angle geometry constraints for zero ligand violations.</p>
+                    <pre><code>L_total = 4.0 * L_flow          # Structure
+        + 0.003 * L_confidence   # Confidence
+        + 0.03 * L_distogram     # Distance bins
+        + 1.0 * L_affinity       # Binding affinity
+        + 0.1 * L_bond           # Bond length
+        + 0.1 * L_angle          # Bond angle
+        + 0.05 * L_clash         # Steric clash</code></pre>
+                </div>
+
+                <div class="mod-card">
+                    <h3>4. Enhanced Affinity Module</h3>
+                    <p>Multi-readout prediction (Ki, Kd, IC50, EC50, DC50) with physics features.</p>
+                </div>
+            </div>
+
+            <div class="content-block">
+                <h2>Implementation Timeline</h2>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-marker">Week 1-2</div>
+                        <div class="timeline-content">
+                            <h4>Setup</h4>
+                            <p>Fork Boltz-2, set up GPU cluster, prepare datasets (PDB + ChEMBL + PDBbind)</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-marker">Week 3-4</div>
+                        <div class="timeline-content">
+                            <h4>Data Pipeline</h4>
+                            <p>ChEMBL loader, PDBbind loader, combined multi-task dataset, augmentation</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-marker">Week 5-8</div>
+                        <div class="timeline-content">
+                            <h4>Architecture</h4>
+                            <p>Widen pair repr, MSA reordering, flow matching, physics loss</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-marker">Week 9-10</div>
+                        <div class="timeline-content">
+                            <h4>Training</h4>
+                            <p>Joint loss weighting, gradient control, multi-task experiments</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-marker">Week 11-12</div>
+                        <div class="timeline-content">
+                            <h4>Evaluation</h4>
+                            <p>FoldBench, FEP+4, OpenFE benchmarks. Compare with Boltz-2 baseline.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-block">
+                <h2>Compute Requirements</h2>
+                <table class="data-table">
+                    <thead>
+                        <tr><th>Task</th><th>GPUs</th><th>Time</th><th>Memory/GPU</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Baseline training</td><td>8x A100 80GB</td><td>2-3 weeks</td><td>60-70 GB</td></tr>
+                        <tr><td>Wider pair repr</td><td>8x A100 80GB</td><td>3-4 weeks</td><td>70-80 GB</td></tr>
+                        <tr><td>Flow matching</td><td>4x A100 80GB</td><td>1-2 weeks</td><td>40-50 GB</td></tr>
+                        <tr><td>Full multi-task</td><td>16x A100 80GB</td><td>4-6 weeks</td><td>70-80 GB</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- CODEBASE -->
+        <section id="codebase" class="section">
+            <h1>Codebase Analysis</h1>
+            <p class="section-subtitle">Deep code-level analysis of Boltz-2 and OpenFold repositories</p>
+
+            <div class="content-block">
+                <h2>Boltz-2 Repository Structure</h2>
+                <pre><code>boltz/src/boltz/
+  model/
+    models/boltz2.py          # Main model: trunk + diffusion + affinity + confidence
+    modules/
+      trunkv2.py              # PairFormer + MSA + Templates + InputEmbedder
+      diffusionv2.py          # DiffusionModule + AtomDiffusion
+      diffusion_conditioning.py  # Key innovation: separate conditioning from trunk
+      affinity.py             # AffinityModule + AffinityHeadsTransformer
+      confidence.py           # ConfidenceModule (8 PairFormer layers)
+    layers/
+      pairformer.py          # PairformerLayer + PairformerModule
+      triangular.py          # TriMul Outgoing/Incoming
+      attentionv2.py         # AttentionPairBias (gated, pair-biased)
+      transition.py          # SiLU-gated MLP (LeCun init)
+  data/
+    crop/affinity.py         # AffinityCropper (spatial neighborhood)
+    feature/featurizerv2.py  # Feature engineering for all modalities
+    types.py                 # AffinityInfo, Record, StructureV2
+  loss/                      # Diffusion + confidence + distogram losses</code></pre>
+            </div>
+
+            <div class="content-block">
+                <h2>OpenFold Repository</h2>
+                <div class="callout callout-warning">
+                    <strong>Important:</strong> OpenFold is an AlphaFold <strong>2</strong> clone, NOT AF3. It uses Evoformer + IPA (Invariant Point Attention), not PairFormer + Diffusion. Useful for training infrastructure reference only.
+                </div>
+                <pre><code>openfold/
+  model/
+    model.py            # Main AlphaFold2 class
+    evoformer.py        # 48-block Evoformer (c_m=256, c_z=128)
+    structure_module.py # IPA: 12 heads, 8 blocks (deterministic, no diffusion)
+    heads.py            # pLDDT (50 bins), Distogram (64 bins), TM-score
+  utils/
+    loss.py             # FAPE + distogram + pLDDT + masked MSA + chi + violation
+  data/
+    data_modules.py     # PyTorch Lightning data modules
+  Training: DeepSpeed ZeRO-2, bfloat16, gradient clipping 0.1</code></pre>
+            </div>
+
+            <div class="content-block">
+                <h2>Key Implementation Details from Boltz-2</h2>
+                <div class="detail-grid">
+                    <div class="detail-card">
+                        <h4>Diffusion Conditioning Separation</h4>
+                        <p>Boltz-2's key innovation: conditioning is computed <strong>once</strong> before diffusion sampling, not recomputed at each step. Massive efficiency gain.</p>
+                    </div>
+                    <div class="detail-card">
+                        <h4>Gradient Control</h4>
+                        <p>Only the last recycling iteration computes gradients. Iterations 0-2 run with torch.no_grad() for efficiency.</p>
+                    </div>
+                    <div class="detail-card">
+                        <h4>Molecule-Type Weighting</h4>
+                        <p>Proteins: 1x, Nucleic acids: 5x, Ligands: 10x. Ensures ligand accuracy despite smaller representation.</p>
+                    </div>
+                    <div class="detail-card">
+                        <h4>Cross-Interface Masking</h4>
+                        <p>Affinity module uses lig*rec + rec*lig + lig*lig masking for focused interface attention.</p>
+                    </div>
+                    <div class="detail-card">
+                        <h4>MW Correction</h4>
+                        <p>Post-hoc: 1.035*pred - 0.600*MW^0.3 + 2.833. Empirically calibrated on validation set.</p>
+                    </div>
+                    <div class="detail-card">
+                        <h4>Ensemble Mode</h4>
+                        <p>Two independent AffinityModules averaged for reduced variance. Best structure selected by iPTM.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
